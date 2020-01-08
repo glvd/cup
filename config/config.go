@@ -1,42 +1,49 @@
 package config
 
 import (
-	"github.com/spf13/pflag"
+	"encoding/json"
+	"fmt"
 	"github.com/spf13/viper"
+	"io/ioutil"
+	"path/filepath"
 )
 
-// configValue is a wrapper aroung *pflag.flag
-// that implements FlagValue
-type configValue struct {
-	flag *pflag.Flag
-}
-
-// HasChanges returns whether the flag has changes or not.
-func (v configValue) HasChanged() bool {
-	return v.flag.Changed
-}
-
-// Name returns the name of the flag.
-func (v configValue) Name() string {
-	return v.flag.Name
-}
-
-// ValueString returns the value of the flag as a string.
-func (v configValue) ValueString() string {
-	return v.flag.Value.String()
-}
-
-// ValueType returns the type of the flag as a string.
-func (v configValue) ValueType() string {
-	return v.flag.Value.Type()
-}
-
+// Config ...
 type Config struct {
-	flags *pflag.FlagSet
+	Host string
 }
 
-func (c *Config) VisitAll(fn func(viper.FlagValue)) {
-	c.flags.VisitAll(func(flag *pflag.Flag) {
-		fn(&configValue{flag: flag})
-	})
+var _config Config
+
+// DefaultConfigName ...
+var DefaultConfigName = "config.json"
+
+// DefaultConfigPath ...
+var DefaultConfigPath = "."
+
+// Get ...
+func Get() *Config {
+	return &_config
+}
+
+// Set ...
+func Set(config *Config) {
+	_config = *config
+}
+
+// SaveJSON ...
+func SaveJSON() (err error) {
+	fmt.Printf("Config:%+v\n", _config)
+	indent, err := json.MarshalIndent(_config, "", " ")
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(filepath.Join(DefaultConfigPath, DefaultConfigName), indent, 0755)
+}
+
+// LoadJSON ...
+func LoadJSON() (err error) {
+	viper.AddConfigPath(DefaultConfigPath)
+	viper.SetConfigName(DefaultConfigName)
+	return viper.MergeInConfig()
 }
