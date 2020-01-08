@@ -45,5 +45,10 @@ func SaveJSON() (err error) {
 func LoadJSON() (err error) {
 	viper.AddConfigPath(DefaultConfigPath)
 	viper.SetConfigName(DefaultConfigName)
-	return viper.MergeInConfig()
+	err = viper.MergeInConfig()
+	if err != nil {
+		return err
+	}
+	_config.Host = viper.GetString("host")
+	return nil
 }
