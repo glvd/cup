@@ -19,7 +19,7 @@ var rootCmd = &cobra.Command{
 }
 
 func main() {
-	rootCmd.AddCommand(cmdInit())
+	rootCmd.AddCommand(cmdInit(), cmdRun())
 	e := rootCmd.Execute()
 	if e != nil {
 		panic(e)

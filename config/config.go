@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/spf13/viper"
 	"io/ioutil"
+	"log"
+	"os"
 	"path/filepath"
 )
 
@@ -45,10 +47,15 @@ func SaveJSON() (err error) {
 func LoadJSON() (err error) {
 	viper.AddConfigPath(DefaultConfigPath)
 	viper.SetConfigName(DefaultConfigName)
-	err = viper.MergeInConfig()
+	open, err := os.Open(filepath.Join(DefaultConfigPath, DefaultConfigName))
 	if err != nil {
 		return err
 	}
+	err = viper.MergeConfig(open)
+	if err != nil {
+		return err
+	}
+	log.Println("host", viper.Get("host"))
 	_config.Host = viper.GetString("host")
 	return nil
 }
