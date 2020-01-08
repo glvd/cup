@@ -5,11 +5,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const programName = `conversion`
+const programName = `cup`
 
 var rootCmd = &cobra.Command{
-	Use:     "conversion [command]",
-	Short:   "call conversion command",
+	Use:     "cup [command]",
+	Short:   "call cup command",
 	Version: "v0.0.1",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("arguments [command] was not inputted")
