@@ -8,23 +8,21 @@ import (
 	"github.com/glvd/go-fftool"
 )
 
-var _ffprobe *fftool.FFProbe
-
 // InitFFTool ...
 func preinit(s config.SliceConfig) {
 	if s.CommandPath != "" {
 		fftool.DefaultCommandPath = s.CommandPath
-	}
-	_ffprobe = fftool.NewFFProbe()
-	if s.FFProbeName != "" {
-		_ffprobe.Name = s.FFProbeName
 	}
 }
 
 // Slice ...
 func Slice(ctx context.Context, s config.SliceConfig) (f *Fragment, e error) {
 	preinit(s)
-	format, e := _ffprobe.StreamFormat(s.Filepath)
+	ffprobe := fftool.NewFFProbe()
+	if s.FFProbeName != "" {
+		ffprobe.Name = s.FFProbeName
+	}
+	format, e := ffprobe.StreamFormat(s.Filepath)
 	if e != nil {
 		return nil, fmt.Errorf("ffprobe error:%w", e)
 	}
@@ -41,9 +39,12 @@ func Slice(ctx context.Context, s config.SliceConfig) (f *Fragment, e error) {
 
 	sharpness := fmt.Sprintf("%dP", fftool.ScaleValue(cfg.Scale))
 	ff := fftool.NewFFMpeg(cfg)
-
-	ff = ff.OptimizeWithFormat(format)
-
+	if s.FFMpegName != "" {
+		ff.Name = s.FFMpegName
+	}
+	if err := fftool.OptimizeWithFormat(cfg, format); err != nil {
+		return nil, err
+	}
 	e = ff.Run(ctx, s.Filepath)
 	if e != nil {
 		return nil, fmt.Errorf("run error:%w", e)

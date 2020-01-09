@@ -17,6 +17,7 @@ type SliceConfig struct {
 	Crypto          *Crypto
 	CommandPath     string
 	FFProbeName     string
+	FFMpegName      string
 	AutoRemove      bool
 	Scale           Scale
 	ProcessCore     ProcessCore
