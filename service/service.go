@@ -56,6 +56,6 @@ func (s *Service) HandleWorker() error {
 }
 
 // AddTask ...
-func (s *Service) AddTask(name string, val interface{}) error {
+func (s *Service) Register(name string, val interface{}) error {
 	return s.serv.RegisterTask(name, val)
 }
