@@ -4,6 +4,7 @@ import (
 	"github.com/RichardKnop/machinery/v1"
 	"github.com/RichardKnop/machinery/v1/config"
 	c "github.com/glvd/cup/config"
+	"log"
 	"sync"
 )
 
@@ -30,6 +31,7 @@ func NewService(cpuCfg c.Config) *Service {
 
 		server, err := machinery.NewServer(cfg)
 		if err != nil {
+			log.Fatal(err)
 			return
 		}
 		_service = &Service{

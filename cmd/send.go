@@ -1,15 +1,28 @@
 package main
 
 import (
-	"fmt"
+	"github.com/RichardKnop/machinery/v1/tasks"
 	"github.com/glvd/cup"
 	"github.com/glvd/cup/config"
 	"github.com/glvd/cup/service"
 	"github.com/spf13/cobra"
-	"log"
 )
 
-func cmdRun() *cobra.Command {
+func cmdSend() *cobra.Command {
+	signature := &tasks.Signature{
+		Name: "send",
+		Args: []tasks.Arg{
+			{
+				Type:  "int64",
+				Value: 1,
+			},
+			{
+				Type:  "int64",
+				Value: 1,
+			},
+		},
+	}
+
 	return &cobra.Command{
 		Use: "run [command]",
 		Run: func(cmd *cobra.Command, args []string) {
@@ -34,4 +47,5 @@ func cmdRun() *cobra.Command {
 			}
 		},
 	}
+
 }
