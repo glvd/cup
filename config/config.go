@@ -31,6 +31,12 @@ var DefaultConfigPath = "."
 // DefaultConfigType ...
 var DefaultConfigType = "json"
 
+var typeExt = map[string]string{
+	"json": ".json",
+	"toml": ".toml",
+	"yaml": ".yml",
+}
+
 // Default ...
 func Default() *Config {
 	return &Config{
@@ -76,7 +82,7 @@ func SaveConfig() (err error) {
 	if err != nil {
 		return err
 	}
-	viper.SetConfigFile(filepath.Join(DefaultConfigPath, DefaultConfigName+".json"))
+	viper.SetConfigFile(filepath.Join(DefaultConfigPath, DefaultConfigName+Ext()))
 
 	return viper.WriteConfig()
 
@@ -93,4 +99,12 @@ func LoadConfig() (err error) {
 	}
 	m := extmap.ToMap(viper.AllSettings())
 	return m.Struct(&_config)
+}
+
+// Ext ...
+func Ext() string {
+	if v, b := typeExt[DefaultConfigType]; b {
+		return v
+	}
+	return ".json"
 }
