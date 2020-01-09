@@ -22,7 +22,7 @@ func cmdRun() *cobra.Command {
 
 			s := service.NewService(*config.Get())
 			s.NewWorker()
-			err = s.Register("slice", cup.TaskSlice)
+			err = s.Register("slice", cup.DummySlice)
 			if err != nil {
 				log.Fatal(err)
 				return

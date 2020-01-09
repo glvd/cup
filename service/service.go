@@ -1,8 +1,8 @@
 package service
 
 import (
-	"errors"
 	"github.com/RichardKnop/machinery/v1"
+	"github.com/RichardKnop/machinery/v1/backends/result"
 	"github.com/RichardKnop/machinery/v1/config"
 	"github.com/RichardKnop/machinery/v1/tasks"
 	c "github.com/glvd/cup/config"
@@ -65,13 +65,6 @@ func (s *Service) Register(name string, val interface{}) error {
 }
 
 // Send ...
-func (s *Service) Send(signature *tasks.Signature) (r interface{}, e error) {
-	rlt, e := s.serv.SendTask(signature)
-	if e != nil {
-		return nil, e
-	}
-	if len(rlt.Signature.Args) == 0 {
-		return nil, errors.New("not enough args")
-	}
-	return rlt.Signature.Args[0], nil
+func (s *Service) Send(signature *tasks.Signature) (result *result.AsyncResult, e error) {
+	return s.serv.SendTask(signature)
 }

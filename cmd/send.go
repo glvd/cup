@@ -8,6 +8,7 @@ import (
 	"github.com/glvd/cup/service"
 	"github.com/spf13/cobra"
 	"log"
+	"time"
 )
 
 func cmdSend() *cobra.Command {
@@ -41,8 +42,14 @@ func cmdSend() *cobra.Command {
 				log.Fatal(err)
 				return
 			}
-			log.Println("result:", rlt)
+			log.Printf("result:%+v\n", rlt)
+			for !rlt.GetState().IsCompleted() {
+				log.Println("running", rlt.GetState().State)
+				time.Sleep(1 * time.Second)
+			}
+			for _, result := range rlt.GetState().Results {
+				log.Println("result", result)
+			}
 		},
 	}
-
 }

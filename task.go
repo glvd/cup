@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/glvd/cup/config"
 	"github.com/glvd/go-fftool"
+	"time"
 )
 
 // InitFFTool ...
@@ -14,6 +15,22 @@ func preinit(s config.SliceConfig) {
 	if s.CommandPath != "" {
 		fftool.DefaultCommandPath = s.CommandPath
 	}
+}
+
+// DummySlice ...
+func DummySlice(ctx context.Context, s string) (f string, e error) {
+	fmt.Println("received:", s)
+	indent, e := json.MarshalIndent(&Fragment{
+		Scale:     fftool.Scale720P,
+		Output:    "dummy",
+		Input:     "dummy",
+		Sharpness: "720P",
+	}, "", " ")
+	if e != nil {
+		return "", e
+	}
+	time.Sleep(5 * time.Second)
+	return string(indent), nil
 }
 
 // TaskSlice ...
