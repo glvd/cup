@@ -1,30 +1,32 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/RichardKnop/machinery/v1/tasks"
-	"github.com/glvd/cup"
 	"github.com/glvd/cup/config"
 	"github.com/glvd/cup/service"
 	"github.com/spf13/cobra"
+	"log"
 )
 
 func cmdSend() *cobra.Command {
+	cfg, err := json.Marshal(config.DefaultSliceConfig())
+	if err != nil {
+		return nil
+	}
 	signature := &tasks.Signature{
-		Name: "send",
+		Name: "slice",
 		Args: []tasks.Arg{
 			{
-				Type:  "int64",
-				Value: 1,
-			},
-			{
-				Type:  "int64",
-				Value: 1,
+				Type:  "string",
+				Value: string(cfg),
 			},
 		},
 	}
 
 	return &cobra.Command{
-		Use: "run [command]",
+		Use: "send [command]",
 		Run: func(cmd *cobra.Command, args []string) {
 			err := config.LoadConfig()
 			if err != nil {
@@ -34,17 +36,12 @@ func cmdSend() *cobra.Command {
 			fmt.Printf("config:%+v\n", config.Get())
 
 			s := service.NewService(*config.Get())
-			s.NewWorker()
-			err = s.Register("slice", cup.Slice)
+			rlt, err := s.Send(signature)
 			if err != nil {
 				log.Fatal(err)
 				return
 			}
-			err = s.HandleWorker()
-			if err != nil {
-				log.Fatal(err)
-				return
-			}
+			log.Println("result:", rlt)
 		},
 	}
 

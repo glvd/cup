@@ -2,6 +2,7 @@ package cup
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/glvd/cup/config"
@@ -13,6 +14,24 @@ func preinit(s config.SliceConfig) {
 	if s.CommandPath != "" {
 		fftool.DefaultCommandPath = s.CommandPath
 	}
+}
+
+// TaskSlice ...
+func TaskSlice(ctx context.Context, s string) (f string, e error) {
+	cfg := config.SliceConfig{}
+	e = json.Unmarshal([]byte(s), &cfg)
+	if e != nil {
+		return "", e
+	}
+	sliced, e := Slice(ctx, cfg)
+	if e != nil {
+		return "", e
+	}
+	indent, e := json.MarshalIndent(sliced, "", " ")
+	if e != nil {
+		return "", e
+	}
+	return string(indent), nil
 }
 
 // Slice ...

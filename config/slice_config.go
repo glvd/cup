@@ -19,8 +19,8 @@ type SliceConfig struct {
 	FFProbeName     string
 	FFMpegName      string
 	AutoRemove      bool
-	Scale           Scale
 	ProcessCore     ProcessCore
+	Scale           Scale
 	ProcessID       string
 	BitRate         int64
 	FrameRate       float64

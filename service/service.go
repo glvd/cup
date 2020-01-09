@@ -1,8 +1,10 @@
 package service
 
 import (
+	"errors"
 	"github.com/RichardKnop/machinery/v1"
 	"github.com/RichardKnop/machinery/v1/config"
+	"github.com/RichardKnop/machinery/v1/tasks"
 	c "github.com/glvd/cup/config"
 	"log"
 	"sync"
@@ -60,4 +62,16 @@ func (s *Service) HandleWorker() error {
 // AddTask ...
 func (s *Service) Register(name string, val interface{}) error {
 	return s.serv.RegisterTask(name, val)
+}
+
+// Send ...
+func (s *Service) Send(signature *tasks.Signature) (r interface{}, e error) {
+	rlt, e := s.serv.SendTask(signature)
+	if e != nil {
+		return nil, e
+	}
+	if len(rlt.Signature.Args) == 0 {
+		return nil, errors.New("not enough args")
+	}
+	return rlt.Signature.Args[0], nil
 }
