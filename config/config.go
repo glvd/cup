@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"github.com/spf13/viper"
 	"io/ioutil"
-	"log"
-	"os"
 	"path/filepath"
 )
 
@@ -18,7 +16,7 @@ type Config struct {
 var _config Config
 
 // DefaultConfigName ...
-var DefaultConfigName = "config.json"
+var DefaultConfigName = "config"
 
 // DefaultConfigPath ...
 var DefaultConfigPath = "."
@@ -43,19 +41,15 @@ func SaveJSON() (err error) {
 	return ioutil.WriteFile(filepath.Join(DefaultConfigPath, DefaultConfigName), indent, 0755)
 }
 
-// LoadJSON ...
-func LoadJSON() (err error) {
+// LoadConfig ...
+func LoadConfig() (err error) {
 	viper.AddConfigPath(DefaultConfigPath)
 	viper.SetConfigName(DefaultConfigName)
-	open, err := os.Open(filepath.Join(DefaultConfigPath, DefaultConfigName))
+
+	err = viper.MergeInConfig()
 	if err != nil {
 		return err
 	}
-	err = viper.MergeConfig(open)
-	if err != nil {
-		return err
-	}
-	log.Println("host", viper.Get("host"))
 	_config.Host = viper.GetString("host")
 	return nil
 }

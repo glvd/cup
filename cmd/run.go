@@ -12,7 +12,7 @@ func cmdRun() *cobra.Command {
 	return &cobra.Command{
 		Use: "run [command]",
 		Run: func(cmd *cobra.Command, args []string) {
-			err := config.LoadJSON()
+			err := config.LoadConfig()
 			if err != nil {
 				log.Fatal(err)
 				return
