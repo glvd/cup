@@ -39,7 +39,6 @@ func DefaultSliceConfig() *SliceConfig {
 		AutoRemove:      true,
 		Scale:           fftool.Scale720P,
 		ProcessCore:     fftool.DefaultProcessCore,
-		ProcessID:       "",
 		BitRate:         0,
 		FrameRate:       0,
 		OutputPath:      fftool.DefaultOutputPath,
