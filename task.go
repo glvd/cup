@@ -8,53 +8,51 @@ import (
 	"github.com/glvd/go-fftool"
 )
 
-// Crypto ...
-type Crypto = fftool.Crypto
-
-// Config ...
-type Config = fftool.Config
-
 var _ffprobe *fftool.FFProbe
 
 // InitFFTool ...
-func InitFFTool() {
+func preinit(s config.SliceConfig) {
+	if s.CommandPath != "" {
+		fftool.DefaultCommandPath = s.CommandPath
+	}
 	_ffprobe = fftool.NewFFProbe()
+	if s.FFProbeName != "" {
+		_ffprobe.Name = s.FFProbeName
+	}
 }
 
 // Slice ...
-func Slice(ctx context.Context, s config.SliceConfig) error {
+func Slice(ctx context.Context, s config.SliceConfig) (f *Fragment, e error) {
+	preinit(s)
 	format, e := _ffprobe.StreamFormat(s.Filepath)
-	//format, e := split.FFProbeStreamFormat(input)
 	if e != nil {
-		return fmt.Errorf("ffprobe error:%w", e)
+		return nil, fmt.Errorf("ffprobe error:%w", e)
 	}
 	if !IsMedia(format) {
-		return errors.New("file is not a video/audio")
+		return nil, errors.New("file is not a video/audio")
 	}
-	cfg := s.Config
+	cfg := fftool.DefaultConfig()
 	cfg.SetSlice(true)
-	cfg.OutputPath = s.Output
-	//cfg.Scale = w.WorkImpl.Scale
-	//if w.Crypto != nil {
-	//	cfg.SetCrypt(*w.Crypto)
-	//}
+	cfg.OutputPath = s.OutputPath
+	cfg.Scale = s.Scale
+	if s.Crypto != nil {
+		cfg.SetCrypt(*s.Crypto)
+	}
 
 	sharpness := fmt.Sprintf("%dP", fftool.ScaleValue(cfg.Scale))
 	ff := fftool.NewFFMpeg(cfg)
 
 	ff = ff.OptimizeWithFormat(format)
 
-	e = ff.Run(ctx, input)
-	//sa, e := split.FFMpegSplitToM3U8(ctx, input, split.StreamFormatOption(format), split.ScaleOption(formatScale(w.Scale)), split.OutputOption(w.Output()), split.AutoOption(true))
+	e = ff.Run(ctx, s.Filepath)
 	if e != nil {
-		return nil, Wrap(e)
+		return nil, fmt.Errorf("run error:%w", e)
 	}
 
 	return &Fragment{
-		scale:     cfg.Scale,
-		output:    cfg.ProcessPath(),
-		skip:      w.Skip,
-		input:     input,
-		sharpness: sharpness,
+		Scale:     cfg.Scale,
+		Output:    cfg.ProcessPath(),
+		Input:     s.Filepath,
+		Sharpness: sharpness,
 	}, nil
 }

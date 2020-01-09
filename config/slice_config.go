@@ -8,10 +8,15 @@ type Scale = fftool.Scale
 // ProcessCore ...
 type ProcessCore = fftool.ProcessCore
 
+// Crypto ...
+type Crypto = fftool.Crypto
+
 // SliceConfig ...
 type SliceConfig struct {
 	Filepath        string
-	Output          string
+	Crypto          *Crypto
+	CommandPath     string
+	FFProbeName     string
 	AutoRemove      bool
 	Scale           Scale
 	ProcessCore     ProcessCore
@@ -30,17 +35,18 @@ type SliceConfig struct {
 func DefaultSliceConfig() *SliceConfig {
 	return &SliceConfig{
 		Filepath:        "",
-		Output:          "",
+		Crypto:          nil,
 		AutoRemove:      true,
 		Scale:           fftool.Scale720P,
 		ProcessCore:     fftool.DefaultProcessCore,
+		ProcessID:       "",
 		BitRate:         0,
 		FrameRate:       0,
-		KeyOutput:       true,
 		OutputPath:      fftool.DefaultOutputPath,
 		OutputName:      fftool.DefaultOutputName,
 		M3U8Name:        fftool.DefaultM3U8Name,
 		SegmentFileName: fftool.DefaultSegmentFileName,
 		HLSTime:         fftool.DefaultHLSTime,
+		KeyOutput:       true,
 	}
 }

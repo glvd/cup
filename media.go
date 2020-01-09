@@ -1,6 +1,17 @@
 package cup
 
-import "github.com/glvd/go-fftool"
+import (
+	"github.com/glvd/cup/config"
+	"github.com/glvd/go-fftool"
+)
+
+// Fragment ...
+type Fragment struct {
+	Scale     config.Scale
+	Output    string
+	Input     string
+	Sharpness string
+}
 
 // IsMedia ...
 func IsMedia(format *fftool.StreamFormat) bool {
