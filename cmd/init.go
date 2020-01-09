@@ -7,10 +7,13 @@ import (
 )
 
 func cmdInit() *cobra.Command {
-	return &cobra.Command{
+	path := ""
+
+	cmd := &cobra.Command{
 		Use: "init [command]",
 		Run: func(cmd *cobra.Command, args []string) {
 			config.Set(config.Default())
+			config.DefaultConfigPath = path
 			err := config.SaveConfig()
 			if err != nil {
 				log.Fatal(err)
@@ -19,4 +22,6 @@ func cmdInit() *cobra.Command {
 
 		},
 	}
+	cmd.Flags().StringP("path", "p", ".", "set the output config path")
+	return cmd
 }
