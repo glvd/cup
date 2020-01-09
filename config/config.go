@@ -12,10 +12,12 @@ import (
 
 // Config ...
 type Config struct {
+	Name          string
+	Task          int
 	Broker        string
 	QueueName     string
 	ResultBackend string
-	AMQP          config.AMQPConfig
+	AMQP          *config.AMQPConfig
 }
 
 var _config Config
@@ -28,6 +30,22 @@ var DefaultConfigPath = "."
 
 // DefaultConfigType ...
 var DefaultConfigType = "json"
+
+// Default ...
+func Default() *Config {
+	return &Config{
+		Name:          "cup",
+		Task:          1,
+		Broker:        "amqp://guest:guest@localhost:5672/",
+		QueueName:     "machinery_task",
+		ResultBackend: "redis://localhost:6379",
+		AMQP: &config.AMQPConfig{
+			Exchange:     "machinery_exchange",
+			ExchangeType: "direct",
+			BindingKey:   "machinery_task",
+		},
+	}
+}
 
 // Get ...
 func Get() *Config {
