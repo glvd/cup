@@ -3,6 +3,8 @@ package config
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/RichardKnop/machinery/v1/config"
+	"github.com/goextension/extmap"
 	"github.com/spf13/viper"
 	"io/ioutil"
 	"path/filepath"
@@ -10,7 +12,10 @@ import (
 
 // Config ...
 type Config struct {
-	Host string
+	Broker        string
+	QueueName     string
+	ResultBackend string
+	AMQP          config.AMQPConfig
 }
 
 var _config Config
@@ -20,6 +25,9 @@ var DefaultConfigName = "config"
 
 // DefaultConfigPath ...
 var DefaultConfigPath = "."
+
+// DefaultConfigType ...
+var DefaultConfigType = "json"
 
 // Get ...
 func Get() *Config {
@@ -41,6 +49,21 @@ func SaveJSON() (err error) {
 	return ioutil.WriteFile(filepath.Join(DefaultConfigPath, DefaultConfigName), indent, 0755)
 }
 
+// SaveConfig ...
+func SaveConfig() (err error) {
+	viper.AddConfigPath(DefaultConfigPath)
+	viper.SetConfigName(DefaultConfigName)
+	viper.SetConfigType("json")
+	err = viper.MergeConfigMap(extmap.StructToMap(_config))
+	if err != nil {
+		return err
+	}
+	viper.SetConfigFile(filepath.Join(DefaultConfigPath, DefaultConfigName+".json"))
+
+	return viper.WriteConfig()
+
+}
+
 // LoadConfig ...
 func LoadConfig() (err error) {
 	viper.AddConfigPath(DefaultConfigPath)
@@ -50,6 +73,6 @@ func LoadConfig() (err error) {
 	if err != nil {
 		return err
 	}
-	_config.Host = viper.GetString("host")
+	_config.Broker = viper.GetString("broker")
 	return nil
 }

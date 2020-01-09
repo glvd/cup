@@ -17,7 +17,7 @@ func cmdRun() *cobra.Command {
 				log.Fatal(err)
 				return
 			}
-			fmt.Println("Host:", config.Get().Host, "viperHost:", viper.GetString("host"))
+			fmt.Println("broker:", config.Get().Broker, "viperHost:", viper.GetString("host"))
 		},
 	}
 }
