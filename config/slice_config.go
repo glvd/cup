@@ -1,6 +1,9 @@
 package config
 
-import "github.com/glvd/go-fftool"
+import (
+	"encoding/json"
+	"github.com/glvd/go-fftool"
+)
 
 // Scale ...
 type Scale = fftool.Scale
@@ -49,4 +52,13 @@ func DefaultSliceConfig() *SliceConfig {
 		HLSTime:         fftool.DefaultHLSTime,
 		KeyOutput:       true,
 	}
+}
+
+// String ...
+func (c SliceConfig) String() string {
+	m, err := json.Marshal(c)
+	if err != nil {
+		return ""
+	}
+	return string(m)
 }

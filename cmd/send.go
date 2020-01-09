@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/RichardKnop/machinery/v1/tasks"
+	"github.com/glvd/cup"
 	"github.com/glvd/cup/config"
 	"github.com/glvd/cup/service"
 	"github.com/spf13/cobra"
@@ -20,8 +21,8 @@ func cmdSend() *cobra.Command {
 		Name: "slice",
 		Args: []tasks.Arg{
 			{
-				Type:  "string",
-				Value: string(cfg),
+				Type:  "[]byte",
+				Value: cfg,
 			},
 		},
 	}
@@ -49,6 +50,11 @@ func cmdSend() *cobra.Command {
 			}
 			for _, result := range rlt.GetState().Results {
 				log.Println("result", result)
+				var f cup.Fragment
+				err := json.Unmarshal([]byte(result.Value.(string)), &f)
+				if err != nil {
+					log.Fatal(err)
+				}
 			}
 		},
 	}

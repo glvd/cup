@@ -18,9 +18,9 @@ func preinit(s config.SliceConfig) {
 }
 
 // DummySlice ...
-func DummySlice(ctx context.Context, s string) (f string, e error) {
-	fmt.Println("received:", s)
-	indent, e := json.MarshalIndent(&Fragment{
+func DummySlice(ctx context.Context, s []byte) (f string, e error) {
+	fmt.Println("received:", string(s))
+	b, e := json.MarshalIndent(&Fragment{
 		Scale:     fftool.Scale720P,
 		Output:    "dummy",
 		Input:     "dummy",
@@ -30,7 +30,7 @@ func DummySlice(ctx context.Context, s string) (f string, e error) {
 		return "", e
 	}
 	time.Sleep(5 * time.Second)
-	return string(indent), nil
+	return string(b), nil
 }
 
 // TaskSlice ...
