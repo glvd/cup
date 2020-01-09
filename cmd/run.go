@@ -16,8 +16,7 @@ func cmdRun() *cobra.Command {
 				log.Fatal(err)
 				return
 			}
-			fmt.Println("broker:", config.Get().Broker)
-			fmt.Printf("amqp:%+v", config.Get().AMQP)
+			fmt.Printf("config:%+v\n", config.Get())
 		},
 	}
 }
