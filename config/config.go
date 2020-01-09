@@ -73,6 +73,6 @@ func LoadConfig() (err error) {
 	if err != nil {
 		return err
 	}
-	_config.Broker = viper.GetString("broker")
-	return nil
+	m := extmap.ToMap(viper.AllSettings())
+	return m.Struct(&_config)
 }

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/glvd/cup/config"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"log"
 )
 
@@ -17,7 +16,8 @@ func cmdRun() *cobra.Command {
 				log.Fatal(err)
 				return
 			}
-			fmt.Println("broker:", config.Get().Broker, "viperHost:", viper.GetString("host"))
+			fmt.Println("broker:", config.Get().Broker)
+			fmt.Printf("amqp:%+v", config.Get().AMQP)
 		},
 	}
 }
