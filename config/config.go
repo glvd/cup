@@ -71,7 +71,7 @@ func SaveJSON() (err error) {
 func SaveConfig() (err error) {
 	viper.AddConfigPath(DefaultConfigPath)
 	viper.SetConfigName(DefaultConfigName)
-	viper.SetConfigType("json")
+	viper.SetConfigType(DefaultConfigType)
 	err = viper.MergeConfigMap(extmap.StructToMap(_config))
 	if err != nil {
 		return err
