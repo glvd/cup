@@ -30,7 +30,7 @@ func cmdSend() *cobra.Command {
 	return &cobra.Command{
 		Use: "send [command]",
 		Run: func(cmd *cobra.Command, args []string) {
-			err := config.LoadConfig()
+			err := config.Load()
 			if err != nil {
 				log.Fatal(err)
 				return

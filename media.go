@@ -1,6 +1,7 @@
 package cup
 
 import (
+	"encoding/json"
 	"github.com/glvd/cup/config"
 	"github.com/glvd/go-fftool"
 )
@@ -11,6 +12,15 @@ type Fragment struct {
 	Output    string
 	Input     string
 	Sharpness string
+}
+
+// JSON ...
+func (f *Fragment) JSON() (string, error) {
+	marshal, err := json.Marshal(f)
+	if err != nil {
+		return "", err
+	}
+	return string(marshal), nil
 }
 
 // IsMedia ...

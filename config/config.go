@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/RichardKnop/machinery/v1/config"
+	"github.com/glvd/go-fftool"
 	"github.com/goextension/extmap"
 	"github.com/spf13/viper"
 	"io/ioutil"
@@ -13,6 +14,11 @@ import (
 // Config ...
 type Config struct {
 	Name          string
+	CommandPath   string
+	FFProbeName   string
+	FFMpegName    string
+	AutoRemove    bool
+	ProcessCore   ProcessCore
 	Task          int
 	Broker        string
 	QueueName     string
@@ -41,6 +47,11 @@ var typeExt = map[string]string{
 func Default() *Config {
 	return &Config{
 		Name:          "cup",
+		CommandPath:   "",
+		FFProbeName:   "",
+		FFMpegName:    "",
+		AutoRemove:    true,
+		ProcessCore:   fftool.ProcessCUDA,
 		Task:          1,
 		Broker:        "amqp://guest:guest@localhost:5672/",
 		QueueName:     "machinery_task",
@@ -73,8 +84,8 @@ func SaveJSON() (err error) {
 	return ioutil.WriteFile(filepath.Join(DefaultConfigPath, DefaultConfigName), indent, 0755)
 }
 
-// SaveConfig ...
-func SaveConfig() (err error) {
+// Save ...
+func Save() (err error) {
 	viper.AddConfigPath(DefaultConfigPath)
 	viper.SetConfigName(DefaultConfigName)
 	viper.SetConfigType(DefaultConfigType)
@@ -88,8 +99,8 @@ func SaveConfig() (err error) {
 
 }
 
-// LoadConfig ...
-func LoadConfig() (err error) {
+// Load ...
+func Load() (err error) {
 	viper.AddConfigPath(DefaultConfigPath)
 	viper.SetConfigName(DefaultConfigName)
 

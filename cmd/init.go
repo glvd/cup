@@ -14,7 +14,7 @@ func cmdInit() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			config.Set(config.Default())
 			config.DefaultConfigPath = path
-			err := config.SaveConfig()
+			err := config.Save()
 			if err != nil {
 				log.Fatal(err)
 				return

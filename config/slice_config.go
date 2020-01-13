@@ -18,11 +18,6 @@ type Crypto = fftool.Crypto
 type SliceConfig struct {
 	Filepath        string
 	Crypto          *Crypto
-	CommandPath     string
-	FFProbeName     string
-	FFMpegName      string
-	AutoRemove      bool
-	ProcessCore     ProcessCore
 	Scale           Scale
 	ProcessID       string
 	BitRate         int64
@@ -40,9 +35,7 @@ func DefaultSliceConfig() *SliceConfig {
 	return &SliceConfig{
 		Filepath:        "",
 		Crypto:          nil,
-		AutoRemove:      true,
 		Scale:           fftool.Scale720P,
-		ProcessCore:     fftool.DefaultProcessCore,
 		BitRate:         0,
 		FrameRate:       0,
 		OutputPath:      fftool.DefaultOutputPath,
@@ -61,4 +54,9 @@ func (c SliceConfig) String() string {
 		return ""
 	}
 	return string(m)
+}
+
+// Parse ...
+func (c *SliceConfig) Parse(s string) error {
+	return json.Unmarshal([]byte(s), c)
 }

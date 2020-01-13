@@ -7,14 +7,30 @@ import (
 	"fmt"
 	"github.com/glvd/cup/config"
 	"github.com/glvd/go-fftool"
+	"github.com/glvd/go-fftool/factory"
 	"time"
 )
 
-// InitFFTool ...
-func preinit(s config.SliceConfig) {
-	if s.CommandPath != "" {
-		fftool.DefaultCommandPath = s.CommandPath
+func runInit() {
+	err := config.Load()
+	if err != nil {
+		panic(err)
 	}
+	cfg := config.Get()
+
+	factory.Initialize(func(option *factory.Option) {
+		if cfg.FFMpegName != "" {
+			option.MpegName = cfg.FFMpegName
+		}
+		if cfg.FFProbeName != "" {
+			option.ProbeName = cfg.FFProbeName
+		}
+
+		if cfg.CommandPath != "" {
+			option.CommandPath = cfg.CommandPath
+		}
+	})
+
 }
 
 // DummySlice ...
@@ -35,38 +51,30 @@ func DummySlice(ctx context.Context, s []byte) (f string, e error) {
 
 // TaskSlice ...
 func TaskSlice(ctx context.Context, s string) (f string, e error) {
-	cfg := config.SliceConfig{}
-	e = json.Unmarshal([]byte(s), &cfg)
+	cfg := config.DefaultSliceConfig()
+	e = cfg.Parse(s)
 	if e != nil {
 		return "", e
 	}
-	sliced, e := Slice(ctx, cfg)
+	frag, e := Slice(ctx, cfg)
 	if e != nil {
 		return "", e
 	}
-	indent, e := json.MarshalIndent(sliced, "", " ")
-	if e != nil {
-		return "", e
-	}
-	return string(indent), nil
+	return frag.JSON()
 }
 
 // Slice ...
-func Slice(ctx context.Context, s config.SliceConfig) (f *Fragment, e error) {
-	preinit(s)
-	ffprobe := fftool.NewFFProbe()
-	if s.FFProbeName != "" {
-		ffprobe.Name = s.FFProbeName
-	}
-	format, e := ffprobe.StreamFormat(s.Filepath)
+func Slice(ctx context.Context, s *config.SliceConfig) (f *Fragment, e error) {
+	probe := factory.Probe()
+	format, e := probe.StreamFormat(s.Filepath)
 	if e != nil {
-		return nil, fmt.Errorf("ffprobe error:%w", e)
+		return nil, fmt.Errorf("probe error:%w", e)
 	}
 	if !IsMedia(format) {
 		return nil, errors.New("file is not a video/audio")
 	}
 	cfg := fftool.DefaultConfig()
-	cfg.SetSlice(true)
+	cfg.Slice = true
 	cfg.OutputPath = s.OutputPath
 	cfg.Scale = s.Scale
 	if s.Crypto != nil {
@@ -74,22 +82,22 @@ func Slice(ctx context.Context, s config.SliceConfig) (f *Fragment, e error) {
 	}
 
 	sharpness := fmt.Sprintf("%dP", fftool.ScaleValue(cfg.Scale))
-	ff := fftool.NewFFMpeg(cfg)
-	if s.FFMpegName != "" {
-		ff.Name = s.FFMpegName
-	}
+	mpeg := factory.Mpeg()
 	if err := fftool.OptimizeWithFormat(cfg, format); err != nil {
 		return nil, err
 	}
-	e = ff.Run(ctx, s.Filepath)
+	e = mpeg.Run(ctx, s.Filepath, func(cfg *fftool.Config) *fftool.Config {
+		return cfg
+	})
 	if e != nil {
 		return nil, fmt.Errorf("run error:%w", e)
 	}
 
-	return &Fragment{
+	f = &Fragment{
 		Scale:     cfg.Scale,
 		Output:    cfg.ProcessPath(),
 		Input:     s.Filepath,
 		Sharpness: sharpness,
-	}, nil
+	}
+	return f, nil
 }
