@@ -50,9 +50,8 @@ func DummySlice(ctx context.Context, s []byte) (f string, e error) {
 }
 
 // TaskSlice ...
-func TaskSlice(ctx context.Context, s string) (f string, e error) {
-	cfg := config.DefaultSliceConfig()
-	e = cfg.Parse(s)
+func TaskSlice(ctx context.Context, s []byte) (f string, e error) {
+	cfg, e := config.ParseSliceConfig(s)
 	if e != nil {
 		return "", e
 	}
@@ -80,13 +79,13 @@ func Slice(ctx context.Context, s *config.SliceConfig) (f *Fragment, e error) {
 	if s.Crypto != nil {
 		cfg.SetCrypt(*s.Crypto)
 	}
-
+	cfg.LogOutput = s.LogOutput
 	sharpness := fmt.Sprintf("%dP", fftool.ScaleValue(cfg.Scale))
 	mpeg := factory.Mpeg()
 	if err := fftool.OptimizeWithFormat(cfg, format); err != nil {
 		return nil, err
 	}
-	e = mpeg.Run(ctx, s.Filepath, func(cfg *fftool.Config) *fftool.Config {
+	e = mpeg.Run(ctx, s.Filepath, func(c *fftool.Config) *fftool.Config {
 		return cfg
 	})
 	if e != nil {
@@ -100,4 +99,14 @@ func Slice(ctx context.Context, s *config.SliceConfig) (f *Fragment, e error) {
 		Sharpness: sharpness,
 	}
 	return f, nil
+}
+
+// TaskInit ...
+func TaskInit(cfg *config.Config) {
+	factory.Initialize(func(option *factory.Option) {
+		option.CommandPath = cfg.CommandPath
+		option.ProbeName = cfg.FFProbeName
+		option.MpegName = cfg.FFMpegName
+	})
+
 }

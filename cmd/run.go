@@ -10,7 +10,8 @@ import (
 )
 
 func cmdRun() *cobra.Command {
-	return &cobra.Command{
+
+	cmd := &cobra.Command{
 		Use: "run [command]",
 		Run: func(cmd *cobra.Command, args []string) {
 			err := config.Load()
@@ -18,11 +19,12 @@ func cmdRun() *cobra.Command {
 				log.Fatal(err)
 				return
 			}
-			fmt.Printf("config:%+v\n", config.Get())
-
-			s := service.NewService(*config.Get())
+			cfg := config.Get()
+			fmt.Printf("config:%+v\n", cfg)
+			cup.TaskInit(config.Get())
+			s := service.NewService(*cfg)
 			s.NewWorker()
-			err = s.Register("slice", cup.DummySlice)
+			err = s.Register("slice", cup.TaskSlice)
 			if err != nil {
 				log.Fatal(err)
 				return
@@ -34,4 +36,6 @@ func cmdRun() *cobra.Command {
 			}
 		},
 	}
+	//cmd.Flags().StringP("ffmpeg", "f", "./bin", "set the ffmpeg command path")
+	return cmd
 }

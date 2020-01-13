@@ -19,7 +19,6 @@ type SliceConfig struct {
 	Filepath        string
 	Crypto          *Crypto
 	Scale           Scale
-	ProcessID       string
 	BitRate         int64
 	FrameRate       float64
 	OutputPath      string //output path
@@ -28,6 +27,7 @@ type SliceConfig struct {
 	SegmentFileName string
 	HLSTime         int
 	KeyOutput       bool
+	LogOutput       bool
 }
 
 // DefaultSliceConfig ...
@@ -44,6 +44,7 @@ func DefaultSliceConfig() *SliceConfig {
 		SegmentFileName: fftool.DefaultSegmentFileName,
 		HLSTime:         fftool.DefaultHLSTime,
 		KeyOutput:       true,
+		LogOutput:       true,
 	}
 }
 
@@ -57,6 +58,16 @@ func (c SliceConfig) String() string {
 }
 
 // Parse ...
-func (c *SliceConfig) Parse(s string) error {
-	return json.Unmarshal([]byte(s), c)
+func (c *SliceConfig) Parse(s []byte) error {
+	return json.Unmarshal(s, c)
+}
+
+// ParseSliceConfig ...
+func ParseSliceConfig(s []byte) (*SliceConfig, error) {
+	var cfg SliceConfig
+	err := cfg.Parse(s)
+	if err != nil {
+		return nil, err
+	}
+	return &cfg, nil
 }

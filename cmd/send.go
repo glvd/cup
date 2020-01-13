@@ -13,7 +13,10 @@ import (
 )
 
 func cmdSend() *cobra.Command {
-	cfg, err := json.Marshal(config.DefaultSliceConfig())
+	dcfg := config.DefaultSliceConfig()
+	dcfg.Filepath = "D:\\video\\test2.mp4"
+	cfg, err := json.Marshal(dcfg)
+
 	if err != nil {
 		return nil
 	}
